@@ -14,7 +14,7 @@ Senaryo gereği uygulama:
 ## Kullanılan Teknolojiler ve Kütüphaneler
 
 * **Geliştirme Ortamı (IDE):** Visual Studio Community 2026
-* **Dil:** C# (.NET Core / .NET 6+)
+* **Dil:** C# (.NET Core / .NET 8)
 * **Veri İletişimi:** `System.Net.Http.HttpClient` (Asenkron veri çekme işlemi için)
 * **Veri İşleme:** `System.Text.Json` (JSON Deserialization için)
 * **Sorgulama:** LINQ (Language Integrated Query - Veri filtreleme için)
