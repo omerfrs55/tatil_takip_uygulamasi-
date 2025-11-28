@@ -1,63 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization; // Tarih ve saat format işlemleri için
-using System.Linq; // Listeler üzerinde sorgulama yapmak (Where, Select) için
-using System.Net.Http; // İnternet istekleri (API) için
-using System.Text.Json; // JSON verisini okumak için
-using System.Threading.Tasks; // Asenkron işlemler (Async/Await) için
+using System.Globalization; // Tarih ve saat format işlemleri için gerekli
+using System.Linq; // Listeler üzerinde sorgulama yapmak (Where, Select) için gerekli
+using System.Net.Http; // İnternet istekleri (API bağlantısı) için gerekli
+using System.Text.Json; // JSON verisini okuyup C# nesnesine çevirmek için gerekli
+using System.Threading.Tasks; // Asenkron işlemler (Async/Await) için gerekli
 
 namespace PublicHolidayTracker
 {
-    // Soru işaretimiz (?) bu değerleri boş (null) gelebileceğini belirtir, hata almamızı engeller.
+    // Soru işareti (?) bu değerlerin boş (null) gelebileceğini belirtir, böylece program hata vermez.
     public class Holiday
     {
-        public string? date { get; set; }        // Tatil tarihi (YYYY-MM-DD)
-        public string? localName { get; set; }   // Yerel isim (Örnek: Cumhuriyet Bayramı)
-        public string? name { get; set; }        // İngilizce isim (Örnek: Republic Day)
+        public string? date { get; set; }        // Tatil tarihi (Format: yyyy-MM-dd)
+        public string? localName { get; set; }   // Yerel isim (Örn: Cumhuriyet Bayramı)
+        public string? name { get; set; }        // İngilizce isim (Örn: Republic Day)
         public string? countryCode { get; set; } // Ülke kodu (TR)
 
-        // ÖNEMLİ DETAY: 'fixed' C# dilinde rezerve edilmiş bir kelimedir Bu nedenle değişken ismi olarak kullanmak için başına '@' işareti koyuyoruz.
+        // ÖNEMLİ: 'fixed' C# dilinde özel bir kelimedir (keyword) bu yüzden değişken adı olarak kullanmak için başına '@' işareti koyduk.
         public bool @fixed { get; set; }
 
-        public bool global { get; set; }
+        public bool global { get; set; }         // Ulusal tatil mi?
     }
 
     class Program
     {
-        // API isteklerini yönetecek nesnemiz (Static olması bellek yönetimimiz için daha iyi oluyor)
+        // API isteklerini yönetecek nesnemiz (Static tanımladık ki her istekte yeniden oluşup belleği yormasın)
         private static readonly HttpClient client = new HttpClient();
 
         // Tüm tatil verilerini hafızada tutacağımız ana listemiz
         private static List<Holiday> allHolidays = new List<Holiday>();
 
-        // "Programın giriş noktası" Async Task yapıyoruz çünkü internetten veri çekeceğiz.
+        // Programımın başlangıç noktası
+        // İnternetten veri çekeceğimiz için 'async Task' yapısını kullandım
         static async Task Main(string[] args)
         {
-            // Konsol başlığı
             Console.Title = "Public Holiday Tracker - Türkiye (2023-2025)";
 
             Console.WriteLine("Veriler API üzerinden çekiliyor, lütfen bekleyiniz...");
 
-            // Verileri İnternetten Yükleme İşlemimiz
+            // Uygulama açılırken verileri internetten indirip hafızaya alıyoruz
             await LoadHolidaysAsync();
 
-            Console.Clear(); // Yükleme bitince ekranı temizleme
-
-            // Eğer hiç veri çekilemediyse programı durdurmak için (İnternet yoksa vb.)
+            // Eğer hiç veri gelmediyse (İnternet yoksa vs.) kullanıcıyı uyarıp kapat
             if (allHolidays.Count == 0)
             {
                 Console.WriteLine("HATA: Veriler sunucudan alınamadı. İnternet bağlantınızı kontrol edin.");
+                Console.ReadLine(); // Hemen kapanmasın diye bekle
                 return;
             }
 
-            Console.WriteLine($"Sistem Hazır! Toplam {allHolidays.Count} adet tatil kaydı hafızaya alındı.");
-
-            // Kullanıcı Menüsü
+            // Menü Döngüsü
             bool exit = false;
             while (!exit)
             {
-                Console.WriteLine("\n========================================");
+                Console.Clear(); // Her işlemden sonra ekranı temizliyoruz ki karışıklık olmasın
+
+                Console.WriteLine("========================================");
                 Console.WriteLine("      TÜRKİYE RESMİ TATİL TAKİBİ");
+                Console.WriteLine($"      (Hafızadaki Kayıt Sayısı: {allHolidays.Count})");
                 Console.WriteLine("========================================");
                 Console.WriteLine("1. Yıla Göre Listele (2023, 2024, 2025)");
                 Console.WriteLine("2. Tarihe Göre Ara (Örn: 15-07 veya 1.1)");
@@ -66,8 +66,7 @@ namespace PublicHolidayTracker
                 Console.WriteLine("5. Çıkış");
                 Console.Write("Seçiminiz: ");
 
-                // Kullanıcıdan seçim alma (Boş gelirse boş string atıyoruz)
-                string secim = Console.ReadLine() ?? "";
+                string secim = Console.ReadLine() ?? ""; // Boş gelirse hata vermesin
 
                 switch (secim)
                 {
@@ -91,35 +90,41 @@ namespace PublicHolidayTracker
                         Console.WriteLine("Geçersiz seçim, lütfen tekrar deneyin.");
                         break;
                 }
+
+                // EĞER ÇIKIŞ YAPILMADIYSA BEKLİYORUZ:
+                // Kullanıcı sonuçları görsün ve hemen ekranı silmeyelim.
+                if (!exit)
+                {
+                    Console.WriteLine("\nAna menüye dönmek için Enter'a basınız...");
+                    Console.ReadLine();
+                }
             }
         }
 
         // API'den verileri çeken asenkron metodumuz
         private static async Task LoadHolidaysAsync()
         {
-            int[] years = { 2023, 2024, 2025 };
+            int[] years = { 2023, 2024, 2025 }; // Çekilecek yıllar
             string baseUrl = "https://date.nager.at/api/v3/PublicHolidays/";
 
-            // JSON ayarları: Büyük/Küçük harf duyarlılığını kaldırıyoruz (Örn: "Date" gelse de "date" okuyo)
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
+            // JSON Ayarı: Büyük/Küçük harf duyarlılığını kaldırıyoruz
+            // (API bazen "Date" bazen "date" gönderebilir, ikisini de kabul etsin)
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
             foreach (var year in years)
             {
                 try
                 {
-                    // URL oluşturmak için: .../PublicHolidays/2024/TR
+                    // URL oluşturma: .../PublicHolidays/2024/TR
                     string url = $"{baseUrl}{year}/TR";
 
-                    // JSON verisini string olarak indirmek için
+                    // JSON verisini metin (string) olarak indiriyoruz
                     string jsonResponse = await client.GetStringAsync(url);
 
-                    // JSON string'ini C# List<Holiday> nesnesine çevirmek için (Deserialize)
+                    // İndirilen metni bizim C# 'Holiday' sınıfımıza dönüştürüyoruz (Deserialize)
                     var yearHolidays = JsonSerializer.Deserialize<List<Holiday>>(jsonResponse, options);
 
-                    // Listeye ekleme
+                    // Listeye ekliyoruz
                     if (yearHolidays != null)
                     {
                         allHolidays.AddRange(yearHolidays);
@@ -127,19 +132,18 @@ namespace PublicHolidayTracker
                 }
                 catch (Exception ex)
                 {
-                    // İnternet hatası veya API hatası olursa konsola yazdırcaz
                     Console.WriteLine($"{year} yılı verisi çekilemedi: {ex.Message}");
                 }
             }
         }
 
-        // Yıla göre filtreleme
+        // Yıl filtreleme
         private static void YearSelectionMenu()
         {
-            Console.Write("Listelemek istediğiniz yılı girin: ");
+            Console.Write("\nListelemek istediğiniz yılı girin: ");
             string inputYear = Console.ReadLine() ?? "";
 
-            // LINQ Sorgusu: Tarihi girilen yılla başlayanları getiririz
+            // LINQ ile filtreleme: Tarihi girilen yılla başlayanları getiriyoruz
             var filteredHolidays = allHolidays
                 .Where(h => h.date != null && h.date.StartsWith(inputYear))
                 .ToList();
@@ -155,34 +159,34 @@ namespace PublicHolidayTracker
             }
         }
 
-        // Tarih Arama
+        // Akıllı Tarih Arama (Hata toleranslı)
         private static void SearchByDate()
         {
             Console.WriteLine("\n--- Tarihe Göre Arama ---");
             Console.Write("Tarih girin (Gün ve Ay): ");
             string input = Console.ReadLine() ?? "";
 
-            // Kullanıcının girdiği ayraçları (nokta, slaş, boşluk) tire (-) ile değiştiriyoruz
+            // 1. Kullanıcının girdiği noktaları, slashları boşlukları tire (-) yapıyoruz.
+            // Örn: "15.07" -> "15-07" olur.
             string cleanInput = input.Replace(".", "-").Replace("/", "-").Replace(" ", "-");
 
-            // Metni parçalara ayırıyoruz (Gün ve Ay)
+            // 2. Tireden parçalara ayırıyoruz (Gün ve Ay olarak)
             string[] parts = cleanInput.Split('-');
 
-            // En az iki parça var mı? (Gün ve Ay)
             if (parts.Length >= 2)
             {
-                // String'i sayıya çeviriyoruz (Böylece "07" ile "7" aynı sayılacak)
+                // Sayıya çevirmeyi deniyoruz (Böylece "07" ile "7" aynı sayılır)
                 if (int.TryParse(parts[0], out int searchDay) && int.TryParse(parts[1], out int searchMonth))
                 {
-                    // Veritabanında (Listede) arama yapıyoruz
+                    // Listede arama yapıyoruz
                     var foundHolidays = allHolidays.Where(h =>
                     {
                         if (string.IsNullOrEmpty(h.date)) return false;
 
-                        // API'den gelen tarihi (yyyy-MM-dd) standarta çevirip gün/ay kontrolü yapıyoruz
+                        // API'den gelen tarihi (yyyy-MM-dd) C# tarih formatına çeviriyoruz
                         if (DateTime.TryParseExact(h.date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
                         {
-                            // Yıl farketmeksizin GÜN ve AY eşleşiyor mu
+                            // Yıl fark etmeksizin Gün ve Ay tutuyor mu?
                             return dt.Day == searchDay && dt.Month == searchMonth;
                         }
                         return false;
@@ -209,14 +213,13 @@ namespace PublicHolidayTracker
             }
         }
 
-        // İsme göre arama (Büyük/Küçük harf duyarsız)
+        // İsme göre arama
         private static void SearchByName()
         {
-            Console.Write("Tatil adı girin (Örn: Cumhuriyet): ");
-            // Girilen metni küçük harfe çeviriyoruz
-            string keyword = (Console.ReadLine() ?? "").ToLower();
+            Console.Write("\nTatil adı girin (Örn: Cumhuriyet): ");
+            string keyword = (Console.ReadLine() ?? "").ToLower(); // Hepsini küçük harfe çeviriyoruz
 
-            // LINQ Sorgusu: Hem Türkçe isme (localName) hem İngilizce ismine (name) bak
+            // Hem Türkçe isminde (localName) hem İngilizce isminde (name) arama yapıyoruz
             var foundHolidays = allHolidays.Where(h =>
                 (h.localName != null && h.localName.ToLower().Contains(keyword)) ||
                 (h.name != null && h.name.ToLower().Contains(keyword))
@@ -233,23 +236,23 @@ namespace PublicHolidayTracker
             }
         }
 
-        // Tüm listeyi dökme
+        // Tüm listeyi yazdırıyoruz
         private static void ListAllHolidays()
         {
             Console.WriteLine("\n--- 2023-2025 Tüm Resmi Tatiller ---");
             PrintTable(allHolidays);
         }
 
-        // Listeyi tablo şeklinde ekrana basarıyoruz
+        // Yardımcı Metod: Verileri tablo düzeninde ekrana basaıyoruz
         private static void PrintTable(List<Holiday> holidays)
         {
-            // Tablo başlıkları (Sola yaslı hizalama)
+            // Tablo başlıkları (Sola yaslı ve belli boşluklarla)
             Console.WriteLine("{0,-12} {1,-40} {2,-30}", "TARİH", "YEREL İSİM", "ULUSLARARASI İSİM");
             Console.WriteLine(new string('-', 90));
 
             foreach (var h in holidays)
             {
-                // Null kontrolü: Eğer veri yoksa "-" yazıyoruz
+                // Değer null ise yerine "-" çizgisini koyuyoruz
                 string d = h.date ?? "-";
                 string ln = h.localName ?? "-";
                 string n = h.name ?? "-";

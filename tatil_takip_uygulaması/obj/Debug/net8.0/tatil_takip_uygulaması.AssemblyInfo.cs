@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("tatil_takip_uygulaması")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da3c7a847daa071b8d1bd5db9c48a7948f0635a7")]
 [assembly: System.Reflection.AssemblyProductAttribute("tatil_takip_uygulaması")]
 [assembly: System.Reflection.AssemblyTitleAttribute("tatil_takip_uygulaması")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
