@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\source\\repos\\tatil_takip_uygulamasi\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj": {}
+    "C:\\Users\\User\\tatil_takip_uygulamasi--main\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\source\\repos\\tatil_takip_uygulamasi\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj": {
+    "C:\\Users\\User\\tatil_takip_uygulamasi--main\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\source\\repos\\tatil_takip_uygulamasi\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj",
+        "projectUniqueName": "C:\\Users\\User\\tatil_takip_uygulamasi--main\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj",
         "projectName": "tatil_takip_uygulaması",
-        "projectPath": "C:\\Users\\User\\source\\repos\\tatil_takip_uygulamasi\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj",
+        "projectPath": "C:\\Users\\User\\tatil_takip_uygulamasi--main\\tatil_takip_uygulaması\\tatil_takip_uygulaması.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\source\\repos\\tatil_takip_uygulamasi\\tatil_takip_uygulaması\\obj\\",
+        "outputPath": "C:\\Users\\User\\tatil_takip_uygulamasi--main\\tatil_takip_uygulaması\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

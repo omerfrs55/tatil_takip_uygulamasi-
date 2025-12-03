@@ -61,7 +61,7 @@ namespace PublicHolidayTracker
                 Console.WriteLine("========================================");
                 Console.WriteLine("1. Yıla Göre Listele (2023, 2024, 2025)");
                 Console.WriteLine("2. Tarihe Göre Ara (Örn: 15-07 veya 1.1)");
-                Console.WriteLine("3. İsme Göre Ara (Örn: Ramazan)");
+                Console.WriteLine("3. İsme Göre Ara (Örn: Cumhuriyet)");
                 Console.WriteLine("4. Tüm Listeyi Göster");
                 Console.WriteLine("5. Çıkış");
                 Console.Write("Seçiminiz: ");
